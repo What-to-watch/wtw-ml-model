@@ -1,4 +1,6 @@
 import os
+import threading
+
 from surprise import dump
 from training import train
 from db_util import get_db_conn_url
@@ -11,7 +13,7 @@ db = SQLAlchemy(app)
 
 from sqlalchemy import text
 
-model_dump_path = "model_dump"
+model_dump_path = os.path.normpath("model_dump")
 
 @app.route('/topN/<user_id>')
 def getTopN(user_id):
@@ -34,6 +36,13 @@ def getTopN(user_id):
     }
     
 
+@app.route('/train')
+def train_route():
+    train_task = threading.Thread(target=train, args=(model_dump_path,))
+    train_task.start()
+    return {
+        "status": "Started"
+    }
 
 @app.route('/predict')
 def predict():
@@ -44,7 +53,7 @@ def predict():
     }
 
 def get_model():
-    path = os.path.normpath(model_dump_path)
+    path = model_dump_path
     if os.path.isfile(path):
         _, loaded_algo = dump.load(path)
         return loaded_algo

@@ -13,7 +13,7 @@ def train(path):
     engine = create_engine(db_uri, echo=True)
 
     ratings_df = pd.read_sql(
-        "SELECT * from ratings",
+        "SELECT r.user_id, r.movie_id, r.rating, r.timestamp FROM ratings r INNER JOIN (SELECT user_id FROM ratings GROUP BY user_id HAVING COUNT(*) >= 5) o ON r.user_id = o.user_id",
         con = engine
     )
 
