@@ -12,6 +12,7 @@ scikit-surprise = "*"
 psycopg2 = "*"
 flask-sqlalchemy = "*"
 pandas = "*"
+gunicorn = "*"
 
 [requires]
 python_version = "3.8"
